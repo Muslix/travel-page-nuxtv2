@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     MEDIA_ROOT: str = "media"
     ALLOWED_IMAGE_TYPES: list[str] = ["image/jpeg", "image/png", "image/webp"]
     MAX_IMAGE_SIZE: int = 10 * 1024 * 1024  # 10 MB
+    ALLOWED_HOSTS: list[str] = [
+        "localhost",
+    ]
     
     class Config:
         case_sensitive = True

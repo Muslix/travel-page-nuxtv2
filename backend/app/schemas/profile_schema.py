@@ -10,10 +10,9 @@ class ProfileBase(BaseModel):
     website: Optional[str] = None
     avatar_url: Optional[str] = None
     social_links: Optional[dict] = None
-    user_id: int
 
 class ProfileCreate(ProfileBase):
-    """Schema for creating a new profile"""
+    """Schema for creating a new profile. user_id is derived from the logged-in user."""
     pass
 
 class ProfileUpdate(BaseModel):
@@ -28,6 +27,7 @@ class ProfileUpdate(BaseModel):
 class Profile(ProfileBase):
     """Schema for Profile response"""
     id: int
+    user_id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
     

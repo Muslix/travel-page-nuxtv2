@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi import APIRouter, Depends, Query, HTTPException, status, Header
 from sqlalchemy.orm import Session
 from typing import List, Optional, Dict, Any
 
 from app.db.database import get_db
-from app.schemas import Adventure, AdventureCreate, AdventureUpdate, GenericResponse
+from app.schemas import Adventure, AdventureCreate, AdventureUpdate, GenericResponse, User
 from app.services.adventure_service import AdventureService
+from app.services.auth_service import get_current_active_user # Import security dependency
 
 router = APIRouter(
     prefix="/api/v1/adventures",
@@ -71,10 +72,14 @@ async def get_adventure_by_slug(slug: str, db: Session = Depends(get_db)):
     service = AdventureService(db)
     return service.get_adventure_by_slug(slug)
 
-@router.post("/", response_model=Adventure, status_code=status.HTTP_201_CREATED, summary="Neues Abenteuer erstellen")
-async def create_adventure(adventure: AdventureCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=Adventure, status_code=status.HTTP_201_CREATED, summary="Neues Abenteuer erstellen (Admin)")
+async def create_adventure(
+    adventure: AdventureCreate, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user) # Add security dependency
+):
     """
-    Erstellt ein neues Abenteuer/Tour.
+    Erstellt ein neues Abenteuer/Tour. **Authentifizierung erforderlich.**
     
     - Benötigt ein AdventureCreate-Objekt im Request-Body
     - Tags können als Liste von Strings übergeben werden
@@ -94,41 +99,44 @@ async def create_adventure(adventure: AdventureCreate, db: Session = Depends(get
     ```
     """
     service = AdventureService(db)
+    # Optional: Add authorization check here if needed (e.g., check if current_user.is_admin)
     return service.create_adventure(adventure)
 
-@router.put("/{adventure_id}", response_model=Adventure, summary="Abenteuer aktualisieren")
+@router.put("/{adventure_id}", response_model=Adventure, summary="Abenteuer aktualisieren (Admin)")
 async def update_adventure(
-    adventure_id: int, 
+    adventure_id: int,
     adventure: AdventureUpdate, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user) # Add security dependency
 ):
     """
-    Aktualisiert ein bestehendes Abenteuer.
+    Aktualisiert ein bestehendes Abenteuer anhand seiner ID. **Authentifizierung erforderlich.**
     
-    - **adventure_id**: Die eindeutige ID des zu aktualisierenden Abenteuers
-    - Nur angegebene Felder werden aktualisiert, andere bleiben unverändert
-    - Tags können optional als Liste von Strings aktualisiert werden
+    - **adventure_id**: Die ID des zu aktualisierenden Abenteuers
+    - Benötigt ein AdventureUpdate-Objekt im Request-Body
+    - Nur die Felder, die aktualisiert werden sollen, müssen übergeben werden
     
     Gibt ein 404 Not Found zurück, wenn das Abenteuer nicht existiert.
     """
     service = AdventureService(db)
+    # Optional: Add authorization check here
     return service.update_adventure(adventure_id, adventure)
 
-@router.delete("/{adventure_id}", response_model=GenericResponse, summary="Abenteuer löschen")
-async def delete_adventure(adventure_id: int, db: Session = Depends(get_db)):
+@router.delete("/{adventure_id}", response_model=GenericResponse, summary="Abenteuer löschen (Admin)")
+async def delete_adventure(
+    adventure_id: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user) # Add security dependency
+):
     """
-    Löscht ein Abenteuer anhand seiner ID.
+    Löscht ein Abenteuer anhand seiner ID. **Authentifizierung erforderlich.**
     
-    - **adventure_id**: Die eindeutige ID des zu löschenden Abenteuers
+    - **adventure_id**: Die ID des zu löschenden Abenteuers
     
     Gibt ein 404 Not Found zurück, wenn das Abenteuer nicht existiert.
-    
-    Beispiel-Response:
-    ```json
-    {
-      "detail": "Abenteuer mit ID 1 erfolgreich gelöscht"
-    }
-    ```
+    Gibt eine Erfolgsmeldung zurück, wenn das Löschen erfolgreich war.
     """
     service = AdventureService(db)
-    return service.delete_adventure(adventure_id)
+    # Optional: Add authorization check here
+    result = service.delete_adventure(adventure_id)
+    return GenericResponse(detail=result["detail"])

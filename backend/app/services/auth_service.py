@@ -1,6 +1,7 @@
 from datetime import timedelta
 from typing import Optional
 from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer # Import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.core.security.jwt import create_access_token, decode_token
@@ -10,6 +11,8 @@ from app.repositories.user_repository import UserRepository
 from app.schemas.user_schema import User, UserCreate
 from app.schemas.token_schema import TokenData
 
+# OAuth2 scheme definition
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 class AuthService:
     """Service für Authentifizierung und Autorisierung"""
@@ -88,41 +91,34 @@ class AuthService:
     
     def get_current_user(self, token: str) -> User:
         """Gibt den aktuellen Benutzer anhand des Tokens zurück"""
-        payload = decode_token(token)
-        username: str = payload.get("sub")
-        if username is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token konnte nicht validiert werden",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token konnte nicht validiert werden",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        try:
+            payload = decode_token(token)
+            username: str = payload.get("sub")
+            if username is None:
+                raise credentials_exception
+            token_data = TokenData(username=username)
+        except Exception: # Catch broader exceptions from decode_token if needed
+            raise credentials_exception
         
-        user = self.user_repository.get_by_username(self.db, username)
+        user = self.user_repository.get_by_username(self.db, username=token_data.username)
         if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Benutzer nicht gefunden",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        
-        if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Benutzer ist deaktiviert",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        
+            raise credentials_exception
         return user
-    
-    def get_current_admin(self, token: str) -> User:
-        """Gibt den aktuellen Benutzer zurück, wenn er Admin-Rechte hat"""
-        user = self.get_current_user(token)
-        
-        if not user.is_admin:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Keine ausreichenden Berechtigungen",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        
-        return user
+
+# --- Dependency Function --- 
+
+async def get_current_active_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    """
+    FastAPI dependency to get the current active user from a token.
+    Injects the user object into the route handler.
+    """
+    auth_service = AuthService(db=db)
+    user = auth_service.get_current_user(token)
+    if not user.is_active:
+        raise HTTPException(status_code=400, detail="Inaktiver Benutzer")
+    return user

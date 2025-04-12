@@ -1,20 +1,19 @@
 import sys
 import os
-from contextlib import asynccontextmanager # Import asynccontextmanager
+from contextlib import asynccontextmanager
+from app.db.database import Base, engine, get_db 
+from app.api.routes import (
+    adventure_routes, auth_routes, image_routes, profile_routes, equipment_routes
+)
+from app.core.config import settings
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+from alembic.config import Config as AlembicConfig
+from alembic import command as alembic_command
 
 # Add the parent directory ('backend') to sys.path to allow imports like 'from app...'
 # when running main.py directly from within the 'app' directory.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# --- Existing imports ---
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from app.core.config import settings
-from app.api.routes import adventure_routes, image_routes, auth_routes
-from app.db.database import engine, Base # Import engine and Base
-from alembic.config import Config as AlembicConfig # Import Alembic Config
-from alembic import command as alembic_command # Import Alembic commands
 
 # --- Lifespan Event Handler ---
 @asynccontextmanager
@@ -69,7 +68,7 @@ async def lifespan(app: FastAPI):
 
     print("Startup tasks finished.")
 
-    yield # Application runs here
+    yield
 
     # --- Shutdown Logic ---
     print("Running application shutdown tasks...")
@@ -78,47 +77,29 @@ async def lifespan(app: FastAPI):
 
 
 # --- FastAPI App Initialization ---
-# Pass the lifespan manager to the FastAPI app
 app = FastAPI(
-    title="Schwob aufm Sattl API",
-    description="API für den Bikepacking & Reise-Blog 'Schwob aufm Sattl'",
+    title=settings.PROJECT_NAME,
+    description="API für den Schwob aufm Sattl Blog",
     version="0.1.0",
-    openapi_url="/openapi.json", # Changed from /api/openapi.json
-    docs_url="/docs",           # Changed from /api/docs
-    redoc_url="/redoc",         # Changed from /api/redoc
-    swagger_ui_parameters={"defaultModelsExpandDepth": -1},
-    contact={
-        "name": "Schwob aufm Sattl",
-        "url": "https://schwobaufmsattl.de",
-        "email": "info@schwobaufmsattl.de",
-    },
-    license_info={
-        "name": "Private Use",
-        "url": "https://schwobaufmsattl.de",
-    },
-    lifespan=lifespan # Add the lifespan manager here
+    lifespan=lifespan
 )
 
-# CORS-Konfiguration
+# CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.ALLOWED_HOSTS or ["*"], # Use configured origins or allow all
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Media-Ordner erstellen, falls er nicht existiert
-os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
-
-# Media-Ordner statisch bereitstellen
-app.mount("/media", StaticFiles(directory=settings.MEDIA_ROOT), name="media")
-
-@app.get("/")
-async def root():
-    return {"message": "Willkommen bei der Schwob aufm Sattl API"}
-
-# Router einbinden
+# Include API Routers
+app.include_router(auth_routes.router)
 app.include_router(adventure_routes.router)
 app.include_router(image_routes.router)
-app.include_router(auth_routes.router)
+app.include_router(profile_routes.router)
+app.include_router(equipment_routes.router) # Add equipment routes
+
+@app.get("/", tags=["Root"])
+async def read_root():
+    return {"message": f"Willkommen bei der {settings.PROJECT_NAME} API"}

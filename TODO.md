@@ -26,21 +26,21 @@ Ziel ist es, ein persönliches Reise- und Radabenteuer-Blog zu schaffen, das sow
 - [x] PostgreSQL Datenbankstruktur entwerfen
 - [x] Tabellen für Abenteuer/Touren, Bilder, Ausrüstung, Profile erstellen
 - [x] Datenbankmigrationen einrichten
-- [ ] Refaktorierung: Jedes Modell in eine eigene Datei aufteilen
+- [x] Refaktorierung: Jedes Modell in eine eigene Datei aufteilen
 - [ ] Seed-Daten erstellen für Entwicklung
 
 ## Backend (FastAPI)
 - [x] FastAPI Projekt-Setup
 - [x] Datenbank-Modelle und Schemas erstellen
-- [x] Authentifizierung und Autorisierung für Admin-Bereich implementieren
-- [x] API-Endpunkte für Abenteuer/Touren CRUD
-- [x] API-Endpunkte für Bildverwaltung
-- [ ] Refaktorierung: Schemas in separate Dateien pro Modell aufteilen
+- [ ] Authentifizierung und Autorisierung für Admin-Bereich implementieren (Login vorhanden, Routen noch nicht geschützt)
+- [ ] API-Endpunkte für Abenteuer/Touren CRUD (Nur GET implementiert)
+- [x] API-Endpunkte für Bildverwaltung (Upload/Get vorhanden, Verknüpfung/Delete fehlt ggf.)
+- [x] Refaktorierung: Schemas in separate Dateien pro Modell aufteilen
 - [ ] Swagger/OpenAPI Dokumentation konfigurieren und vervollständigen
 - [ ] Projekt-Dokumentation erstellen und pflegen
 - [ ] API-Endpunkte für Ausrüstungs-CRUD
 - [ ] API-Endpunkte für Profil-CRUD
-- [x] API-Endpunkte für Galerie-Verwaltung
+- [ ] API-Endpunkte für Galerie-Verwaltung (Abhängig von Adventure/Image CRUD)
 - [x] Datei-Upload für Bilder implementieren
 - [ ] Backend-Tests schreiben
 
