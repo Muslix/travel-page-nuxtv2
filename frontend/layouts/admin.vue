@@ -67,12 +67,12 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import authService from '~/services/auth-service';
 
 const router = useRouter();
 
 function logout() {
-  // Später mit echter Auth-Logik ersetzen
-  localStorage.removeItem('admin_token');
+  authService.logout();
   router.push('/admin/login');
 }
 </script>

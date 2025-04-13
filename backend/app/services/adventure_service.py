@@ -107,7 +107,7 @@ class AdventureService:
                 detail=f"Fehler beim Aktualisieren des Abenteuers: {str(e)}"
             )
     
-    def delete_adventure(self, adventure_id: int) -> Dict[str, str]:
+    def delete_adventure(self, adventure_id: int) -> None:
         """Ein Abenteuer löschen"""
         # Prüfen, ob das Abenteuer existiert
         existing_adventure = self.adventure_repository.get_by_id(self.db, adventure_id)
@@ -118,11 +118,19 @@ class AdventureService:
             )
         
         # Abenteuer löschen
-        success = self.adventure_repository.delete(self.db, adventure_id)
-        if not success:
+        try:
+            success = self.adventure_repository.delete(self.db, adventure_id)
+            if not success:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Fehler beim Löschen des Abenteuers"
+                )
+        except HTTPException as e:
+            # HTTP-Ausnahmen weiterleiten
+            raise e
+        except Exception as e:
+            # Andere Ausnahmen in HTTP-Ausnahmen umwandeln
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Fehler beim Löschen des Abenteuers"
+                detail=f"Fehler beim Löschen des Abenteuers: {str(e)}"
             )
-        
-        return {"detail": f"Abenteuer mit ID {adventure_id} erfolgreich gelöscht"}

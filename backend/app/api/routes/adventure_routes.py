@@ -105,38 +105,52 @@ async def create_adventure(
 @router.put("/{adventure_id}", response_model=Adventure, summary="Abenteuer aktualisieren (Admin)")
 async def update_adventure(
     adventure_id: int,
-    adventure: AdventureUpdate, 
+    adventure_update: AdventureUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user) # Add security dependency
+    current_user: User = Depends(get_current_active_user)
 ):
     """
-    Aktualisiert ein bestehendes Abenteuer anhand seiner ID. **Authentifizierung erforderlich.**
+    Aktualisiert ein bestehendes Abenteuer/Tour. **Authentifizierung erforderlich.**
     
-    - **adventure_id**: Die ID des zu aktualisierenden Abenteuers
+    - **adventure_id**: Die eindeutige ID des zu aktualisierenden Abenteuers
     - Benötigt ein AdventureUpdate-Objekt im Request-Body
-    - Nur die Felder, die aktualisiert werden sollen, müssen übergeben werden
+    - Nur die angegebenen Felder werden aktualisiert
+    - Tags können hinzugefügt oder entfernt werden
     
     Gibt ein 404 Not Found zurück, wenn das Abenteuer nicht existiert.
     """
     service = AdventureService(db)
-    # Optional: Add authorization check here
-    return service.update_adventure(adventure_id, adventure)
+    
+    # Überprüfen, ob Admin-Rechte vorhanden sind
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Aktualisieren von Abenteuern"
+        )
+    
+    return service.update_adventure(adventure_id, adventure_update)
 
 @router.delete("/{adventure_id}", response_model=GenericResponse, summary="Abenteuer löschen (Admin)")
 async def delete_adventure(
-    adventure_id: int, 
+    adventure_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user) # Add security dependency
+    current_user: User = Depends(get_current_active_user)
 ):
     """
-    Löscht ein Abenteuer anhand seiner ID. **Authentifizierung erforderlich.**
+    Löscht ein Abenteuer/Tour. **Authentifizierung erforderlich.**
     
-    - **adventure_id**: Die ID des zu löschenden Abenteuers
+    - **adventure_id**: Die eindeutige ID des zu löschenden Abenteuers
     
     Gibt ein 404 Not Found zurück, wenn das Abenteuer nicht existiert.
-    Gibt eine Erfolgsmeldung zurück, wenn das Löschen erfolgreich war.
     """
     service = AdventureService(db)
-    # Optional: Add authorization check here
-    result = service.delete_adventure(adventure_id)
-    return GenericResponse(detail=result["detail"])
+    
+    # Überprüfen, ob Admin-Rechte vorhanden sind
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Löschen von Abenteuern"
+        )
+    
+    service.delete_adventure(adventure_id)
+    return {"message": f"Abenteuer mit ID {adventure_id} erfolgreich gelöscht"}

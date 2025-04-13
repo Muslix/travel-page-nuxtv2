@@ -12,9 +12,9 @@
         
         <v-form @submit.prevent="handleLogin" ref="form">
           <v-text-field
-            v-model="email"
-            label="E-Mail"
-            prepend-icon="mdi-email"
+            v-model="username"
+            label="Benutzername"
+            prepend-icon="mdi-account"
             :rules="[required]"
             autocomplete="username"
           ></v-text-field>
@@ -56,48 +56,43 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+<script setup>
+import authService from '~/services/auth-service';
 
-definePageMeta({
-  layout: false,  // Kein Layout für die Login-Seite
-});
-
-const router = useRouter();
-const email = ref('');
+// Reaktive Zustände
+const username = ref('');
 const password = ref('');
 const showPassword = ref(false);
 const loading = ref(false);
 const loginError = ref('');
 const form = ref(null);
 
-const required = (v: string) => !!v || 'Dieses Feld ist erforderlich';
+// Validierung
+const required = (v) => !!v || 'Dieses Feld wird benötigt';
 
+// Login-Handler
 async function handleLogin() {
-  if (!form.value) return;
-  
-  const results = await form.value.validate();
-  const valid = !results.errors.length;
-  
-  if (!valid) return;
+  // Formular validieren
+  const isValid = await form.value?.validate();
+  if (!isValid?.valid) return;
   
   loading.value = true;
   loginError.value = '';
   
   try {
-    // Hier später mit echtem Backend-Aufruf ersetzen
-    // Beispiel für ein einfaches Login (später durch echte API ersetzen)
-    if (email.value === 'admin@example.com' && password.value === 'password') {
-      // Token im localStorage speichern (später durch echte Auth ersetzen)
-      localStorage.setItem('admin_token', 'dummy_token');
-      router.push('/admin');
+    // Login mit dem Auth-Service
+    const result = await authService.login(username.value, password.value);
+    
+    if (result.success) {
+      // Bei Erfolg zum Admin-Dashboard navigieren
+      navigateTo('/admin');
     } else {
-      loginError.value = 'Ungültige Anmeldedaten';
+      // Fehler anzeigen
+      loginError.value = result.error || 'Login fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.';
     }
   } catch (error) {
     console.error('Login error:', error);
-    loginError.value = 'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.';
+    loginError.value = 'Ein unerwarteter Fehler ist aufgetreten.';
   } finally {
     loading.value = false;
   }
@@ -106,6 +101,7 @@ async function handleLogin() {
 
 <style scoped>
 .login-card {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 </style>

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas import User, UserCreate, Token
-from app.services.auth_service import AuthService
+from app.services.auth_service import AuthService, get_current_active_user
 
 router = APIRouter(
     prefix="/api/v1/auth",
@@ -108,3 +108,34 @@ async def read_admin_me(
     """
     service = AuthService(db)
     return service.get_current_admin(token)
+
+@router.post("/admin/users", response_model=User, status_code=status.HTTP_201_CREATED, summary="Neuen Benutzer als Admin anlegen")
+async def create_user_by_admin(
+    user_data: UserCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Erstellt einen neuen Benutzer durch einen Admin. **Nur für Admins zugänglich.**
+    
+    - Erfordert Admin-Rechte
+    - Erlaubt das Anlegen weiterer Benutzer mit regulären Rechten
+    - Verhindert die öffentliche Registrierung auf der Plattform
+    
+    Benötigt folgende Daten im Request-Body:
+    - **username**: Eindeutiger Benutzername
+    - **email**: Eindeutige E-Mail-Adresse
+    - **password**: Sicheres Passwort
+    
+    Bei erfolgreicher Registrierung werden die Benutzerdaten ohne Passwort zurückgegeben.
+    """
+    # Nur Admins dürfen weitere Benutzer anlegen
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Nur Administratoren dürfen neue Benutzer anlegen"
+        )
+    
+    service = AuthService(db)
+    # Neue Benutzer erhalten standardmäßig keine Admin-Rechte
+    return service.register_user(user_data, is_admin=False)

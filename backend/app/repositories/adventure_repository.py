@@ -108,6 +108,26 @@ class AdventureRepository:
         if not adventure:
             return False
         
-        db.delete(adventure)
-        db.commit()
-        return True
+        try:
+            # Zugehörige Bilder abrufen, um sie später zu löschen
+            adventure_images = db.query(Image).filter(Image.adventure_id == adventure_id).all()
+            
+            # Abenteuer löschen
+            db.delete(adventure)
+            
+            # Zugehörige Bilder löschen, wenn sie nicht mehr mit anderen Abenteuern verknüpft sind
+            for image in adventure_images:
+                # Prüfen, ob das Bild noch mit anderen Abenteuern verknüpft ist
+                other_usages = db.query(Adventure).filter(
+                    Adventure.id != adventure_id,
+                    Adventure.images.any(id=image.id)
+                ).first()
+                
+                if not other_usages:
+                    db.delete(image)
+            
+            db.commit()
+            return True
+        except Exception:
+            db.rollback()
+            raise

@@ -17,7 +17,7 @@ Ziel ist es, ein persönliches Reise- und Radabenteuer-Blog zu schaffen, das sow
 
 ## Setup & Infrastruktur
 - [x] Projektstruktur einrichten (Nuxt.js für Frontend, FastAPI für Backend)
-- [ ] GitHub Repository anlegen
+- [x] GitHub Repository anlegen
 - [x] Development-Umgebung konfigurieren
 - [x] Docker-Compose für lokale Entwicklung einrichten (Nuxt, FastAPI, PostgreSQL)
 - [ ] CI/CD Pipeline einrichten

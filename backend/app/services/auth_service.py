@@ -23,6 +23,19 @@ class AuthService:
     
     def register_user(self, user_data: UserCreate, is_admin: bool = False) -> User:
         """Registriert einen neuen Benutzer"""
+        # Nur bestimmte E-Mail-Adresse darf sich registrieren
+        ALLOWED_EMAIL = "muslixlp@googlemail.com"
+        
+        # Prüfen, ob es bereits Benutzer gibt (für erstes Admin-Konto)
+        first_user = self.db.query(User).first() is None
+        
+        # Wenn nicht erstes Konto und E-Mail nicht erlaubt, abweisen
+        if not first_user and user_data.email != ALLOWED_EMAIL:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Registrierung ist nur für autorisierte Personen möglich"
+            )
+        
         # Prüfen, ob Benutzername bereits existiert
         existing_username = self.user_repository.get_by_username(self.db, user_data.username)
         if existing_username:
@@ -38,6 +51,10 @@ class AuthService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="E-Mail-Adresse bereits vergeben"
             )
+        
+        # Für das allererste Konto oder muslixlp@googlemail.com, Admin-Rechte gewähren
+        if first_user or user_data.email == ALLOWED_EMAIL:
+            is_admin = True
         
         # Benutzer erstellen
         return self.user_repository.create(
