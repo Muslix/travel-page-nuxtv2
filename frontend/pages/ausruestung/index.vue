@@ -248,7 +248,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useTheme } from 'vuetify';
-import marked from 'marked';
+import { marked } from 'marked';
 
 // Types
 interface Category {
