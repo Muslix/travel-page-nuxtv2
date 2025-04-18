@@ -11,7 +11,7 @@ from app.db.database import get_db
 from backend.tests.utils.auth import get_admin_token, get_non_admin_token
 
 @pytest.mark.asyncio
-def test_get_adventures_unauthenticated():
+async def test_get_adventures_unauthenticated():
     """Öffentliche Abenteuer-Liste abrufbar (keine Authentifizierung nötig)."""
     async with AsyncClient(app=app, base_url="http://test") as ac:
         response = await ac.get("/api/v1/adventures/")
@@ -19,7 +19,7 @@ def test_get_adventures_unauthenticated():
     assert isinstance(response.json(), list)
 
 @pytest.mark.asyncio
-def test_create_adventure_forbidden_for_non_admin():
+async def test_create_adventure_forbidden_for_non_admin():
     """Nicht-Admin darf kein Abenteuer anlegen (403)."""
     db = next(get_db())
     token = get_non_admin_token(db)
@@ -38,7 +38,7 @@ def test_create_adventure_forbidden_for_non_admin():
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 @pytest.mark.asyncio
-def test_create_adventure_success_for_admin():
+async def test_create_adventure_success_for_admin():
     """Admin kann Abenteuer erfolgreich anlegen."""
     db = next(get_db())
     token = get_admin_token(db)
