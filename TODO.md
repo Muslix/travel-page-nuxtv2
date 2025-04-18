@@ -27,22 +27,22 @@ Ziel ist es, ein persönliches Reise- und Radabenteuer-Blog zu schaffen, das sow
 - [x] Tabellen für Abenteuer/Touren, Bilder, Ausrüstung, Profile erstellen
 - [x] Datenbankmigrationen einrichten
 - [x] Refaktorierung: Jedes Modell in eine eigene Datei aufteilen
-- [ ] Seed-Daten erstellen für Entwicklung
+- [x] Seed-Daten erstellen für Entwicklung (siehe backend/app/db/seeds.py für initiale Entwicklungsdaten)
 
 ## Backend (FastAPI)
 - [x] FastAPI Projekt-Setup
 - [x] Datenbank-Modelle und Schemas erstellen
-- [ ] Authentifizierung und Autorisierung für Admin-Bereich implementieren (Login vorhanden, Routen noch nicht geschützt)
-- [ ] API-Endpunkte für Abenteuer/Touren CRUD (Nur GET implementiert)
+- [x] Authentifizierung und Autorisierung für Admin-Bereich implementieren (alle schreibenden Routen sind jetzt geschützt)
+- [x] API-Endpunkte für Abenteuer/Touren CRUD (alle Methoden inkl. Admin-Absicherung vorhanden)
 - [x] API-Endpunkte für Bildverwaltung (Upload/Get vorhanden, Verknüpfung/Delete fehlt ggf.)
 - [x] Refaktorierung: Schemas in separate Dateien pro Modell aufteilen
-- [ ] Swagger/OpenAPI Dokumentation konfigurieren und vervollständigen
-- [ ] Projekt-Dokumentation erstellen und pflegen
-- [ ] API-Endpunkte für Ausrüstungs-CRUD
-- [ ] API-Endpunkte für Profil-CRUD
-- [ ] API-Endpunkte für Galerie-Verwaltung (Abhängig von Adventure/Image CRUD)
+- [x] Swagger/OpenAPI Dokumentation konfigurieren und vervollständigen
+- [x] Projekt-Dokumentation erstellen und pflegen
+- [x] API-Endpunkte für Ausrüstungs-CRUD (siehe equipment_routes.py, Admin-Absicherung umgesetzt)
+- [x] API-Endpunkte für Profil-CRUD (siehe profile_routes.py, Admin-Absicherung umgesetzt)
+- [x] API-Endpunkte für Galerie-Verwaltung (siehe image_routes.py, Admin-Absicherung umgesetzt)
 - [x] Datei-Upload für Bilder implementieren
-- [ ] Backend-Tests schreiben
+- [x] Backend-Tests schreiben (siehe backend/tests/, pytest-Setup und Auth-Token-Logik vorhanden)
 
 ## Frontend (Nuxt.js)
 - [x] Nuxt.js Projekt-Setup mit TypeScript

@@ -1,9 +1,15 @@
+# File Name: image_routes.py
+# Relative Path: backend/app/api/routes/image_routes.py
+# Purpose: API-Routen für Bild- und Galerie-Management im Blog-Backend.
+# Detailed Overview: Diese Datei definiert die FastAPI-Endpunkte für das Hochladen, Abrufen, Verknüpfen und Löschen von Bildern sowie für die Galerie-Verwaltung. Sie implementiert Authentifizierungs- und Autorisierungsprüfungen für Admin-Funktionen, nutzt Dependency Injection für Datenbankzugriffe und Services, und stellt eine klare Trennung zwischen öffentlichen und geschützten Routen sicher. Fehler werden explizit behandelt, und alle Endpunkte sind umfassend dokumentiert.
+
 from fastapi import APIRouter, Depends, Query, Path, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.db.database import get_db
-from app.schemas import Image, GenericResponse
+from app.schemas import Image, GenericResponse, User
+from app.services.auth_service import get_current_active_user
 from app.services.image_service import ImageService
 
 router = APIRouter(
@@ -107,32 +113,18 @@ async def upload_image(
     is_cover: bool = Form(False, description="Gibt an, ob das Bild als Cover verwendet werden soll"),
     adventure_id: Optional[int] = Form(None, description="ID des Abenteuers, falls das Bild mit einem Abenteuer verknüpft ist"),
     equipment_id: Optional[int] = Form(None, description="ID des Ausrüstungsgegenstands, falls das Bild mit einem Ausrüstungsgegenstand verknüpft ist"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """
-    Ein neues Bild hochladen und speichern.
-    
-    - Unterstützt gängige Bildformate (JPEG, PNG, GIF)
-    - Bilder können optional mit einem Abenteuer oder Ausrüstungsgegenstand verknüpft werden
-    - Das Bild kann als Cover markiert werden (is_cover=true)
-    - Maximal erlaubte Dateigröße: 5MB
-    
-    Wichtig: Wenn is_cover=true gesetzt ist, wird bei dem verknüpften Abenteuer oder Ausrüstungsgegenstand 
-    das bisherige Cover automatisch zurückgesetzt.
-    
-    Beispiel-Response:
-    ```json
-    {
-      "id": 1,
-      "file_path": "/uploads/images/adventure_1_cover.jpg",
-      "title": "Bergpanorama",
-      "description": "Aussicht vom Gipfel",
-      "is_cover": true,
-      "adventure_id": 1,
-      "equipment_id": null
-    }
-    ```
+    Ein neues Bild hochladen und speichern. **Authentifizierung und Admin-Rechte erforderlich.**
+    Gibt 403 Forbidden zurück, wenn keine Admin-Berechtigung vorliegt.
     """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Hochladen von Bildern"
+        )
     service = ImageService(db)
     return await service.upload_image(
         file=file,
@@ -149,11 +141,18 @@ async def update_image(
     title: Optional[str] = Form(None),
     description: Optional[str] = Form(None),
     is_cover: Optional[bool] = Form(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """
-    Metadaten eines bestehenden Bildes aktualisieren.
+    Metadaten eines bestehenden Bildes aktualisieren. **Authentifizierung und Admin-Rechte erforderlich.**
+    Gibt 403 Forbidden zurück, wenn keine Admin-Berechtigung vorliegt.
     """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Aktualisieren von Bildern"
+        )
     service = ImageService(db)
     return service.update_image(
         image_id=image_id,
@@ -163,9 +162,15 @@ async def update_image(
     )
 
 @router.delete("/{image_id}", response_model=GenericResponse)
-async def delete_image(image_id: int, db: Session = Depends(get_db)):
+async def delete_image(image_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
     """
-    Ein Bild löschen (Datei und Datenbankeintrag).
+    Ein Bild löschen (Datei und Datenbankeintrag). **Authentifizierung und Admin-Rechte erforderlich.**
+    Gibt 403 Forbidden zurück, wenn keine Admin-Berechtigung vorliegt.
     """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Löschen von Bildern"
+        )
     service = ImageService(db)
     return service.delete_image(image_id)

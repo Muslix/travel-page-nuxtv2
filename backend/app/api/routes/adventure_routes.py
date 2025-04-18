@@ -1,3 +1,8 @@
+# File Name: adventure_routes.py
+# Relative Path: backend/app/api/routes/adventure_routes.py
+# Purpose: API-Routen für Abenteuer-Management (CRUD) im Blog-Backend.
+# Detailed Overview: Diese Datei definiert die FastAPI-Endpunkte für das Abrufen, Erstellen, Aktualisieren und Löschen von Abenteuern/Touren. Sie implementiert Authentifizierungs- und Autorisierungsprüfungen für Admin-Funktionen, nutzt Dependency Injection für Datenbankzugriffe und Services, und stellt eine klare Trennung zwischen öffentlichen und geschützten Routen sicher. Fehler werden explizit behandelt, und alle Endpunkte sind umfassend dokumentiert.
+
 from fastapi import APIRouter, Depends, Query, HTTPException, status, Header
 from sqlalchemy.orm import Session
 from typing import List, Optional, Dict, Any
@@ -76,30 +81,23 @@ async def get_adventure_by_slug(slug: str, db: Session = Depends(get_db)):
 async def create_adventure(
     adventure: AdventureCreate, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user) # Add security dependency
+    current_user: User = Depends(get_current_active_user)
 ):
     """
-    Erstellt ein neues Abenteuer/Tour. **Authentifizierung erforderlich.**
+    Erstellt ein neues Abenteuer/Tour. **Authentifizierung und Admin-Rechte erforderlich.**
     
     - Benötigt ein AdventureCreate-Objekt im Request-Body
     - Tags können als Liste von Strings übergeben werden
     - Wenn kein Slug angegeben wird, wird er automatisch aus dem Titel generiert
     
-    Beispiel-Request:
-    ```json
-    {
-      "title": "Schwarzwald Bikepacking Tour",
-      "description": "Eine mehrtägige Bikepacking-Tour durch den Schwarzwald",
-      "content": "Detaillierte Beschreibung der Tour...",
-      "status": "published",
-      "location": "Schwarzwald",
-      "distance_km": 250.5,
-      "tags": ["Bikepacking", "Schwarzwald", "Mehrtägig"]
-    }
-    ```
+    Gibt 403 Forbidden zurück, wenn keine Admin-Berechtigung vorliegt.
     """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Erstellen von Abenteuern"
+        )
     service = AdventureService(db)
-    # Optional: Add authorization check here if needed (e.g., check if current_user.is_admin)
     return service.create_adventure(adventure)
 
 @router.put("/{adventure_id}", response_model=Adventure, summary="Abenteuer aktualisieren (Admin)")

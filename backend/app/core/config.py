@@ -16,6 +16,8 @@ class Settings(BaseSettings):
         "DATABASE_URL", 
         "postgresql://postgres:postgres@localhost:5432/schwob_aufm_sattl"
     )
+    # Environment (development/production)
+    ENV: str = os.getenv("ENV", "development")
     
     # CORS
     CORS_ORIGINS: list[str] = [

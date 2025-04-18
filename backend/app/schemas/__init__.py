@@ -20,7 +20,7 @@ from app.schemas.tag_schema import Tag, TagBase, TagCreate
 from app.schemas.image_schema import Image, ImageBase, ImageCreate
 
 # Equipment Schemas
-from app.schemas.equipment_schema import Equipment, EquipmentBase, EquipmentCreate
+from app.schemas.equipment_schema import Equipment, EquipmentBase, EquipmentCreate, EquipmentUpdate
 
 # Profile Schemas
 from app.schemas.profile_schema import Profile, ProfileBase, ProfileCreate, ProfileUpdate
@@ -43,7 +43,7 @@ __all__ = [
     "Image", "ImageBase", "ImageCreate",
     
     # Equipment
-    "Equipment", "EquipmentBase", "EquipmentCreate",
+    "Equipment", "EquipmentBase", "EquipmentCreate", "EquipmentUpdate",
     
     # Profile
     "Profile", "ProfileBase", "ProfileCreate", "ProfileUpdate"

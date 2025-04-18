@@ -1,3 +1,8 @@
+# File Name: profile_routes.py
+# Relative Path: backend/app/api/routes/profile_routes.py
+# Purpose: API-Routen für Profil-Management (CRUD) im Blog-Backend.
+# Detailed Overview: Diese Datei definiert die FastAPI-Endpunkte für das Abrufen, Erstellen, Aktualisieren und Löschen von Profilinformationen. Sie implementiert Authentifizierungs- und Autorisierungsprüfungen für Admin-Funktionen, nutzt Dependency Injection für Datenbankzugriffe und Services, und stellt eine klare Trennung zwischen öffentlichen und geschützten Routen sicher. Fehler werden explizit behandelt, und alle Endpunkte sind umfassend dokumentiert.
+
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -29,52 +34,58 @@ async def get_profile_by_id(profile_id: int, db: Session = Depends(get_db)):
     service = ProfileService(db)
     return service.get_profile_by_id(profile_id)
 
-@router.post("/", response_model=Profile, status_code=status.HTTP_201_CREATED, summary="Neues Profil erstellen (Admin/User)")
+@router.post("/", response_model=Profile, status_code=status.HTTP_201_CREATED, summary="Neues Profil erstellen (Admin)")
 async def create_profile(
     profile: ProfileCreate, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user) # Requires authentication
+    current_user: User = Depends(get_current_active_user)
 ):
     """
-    Erstellt ein neues Profil. **Authentifizierung erforderlich.**
-    
-    - TODO: Verknüpfe das Profil mit `current_user.id`?
-    - TODO: Verhindere, dass ein Benutzer mehrere Profile erstellt?
+    Erstellt ein neues Profil. **Authentifizierung und Admin-Rechte erforderlich.**
+    Gibt 403 Forbidden zurück, wenn keine Admin-Berechtigung vorliegt.
     """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Erstellen von Profilen"
+        )
     service = ProfileService(db)
-    # Add logic here to ensure profile.user_id matches current_user.id or handle admin creation
-    # if profile.user_id != current_user.id and not current_user.is_superuser: # Example check
-    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not allowed to create profile for another user")
     return service.create_profile(profile)
 
-@router.put("/{profile_id}", response_model=Profile, summary="Profil aktualisieren (Admin/Owner)")
+@router.put("/{profile_id}", response_model=Profile, summary="Profil aktualisieren (Admin)")
 async def update_profile(
     profile_id: int,
     profile: ProfileUpdate, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user) # Requires authentication
+    current_user: User = Depends(get_current_active_user)
 ):
     """
-    Aktualisiert ein bestehendes Profil. **Authentifizierung erforderlich.**
-    
-    - TODO: Stelle sicher, dass nur der Profilinhaber oder ein Admin das Profil bearbeiten kann.
+    Aktualisiert ein bestehendes Profil. **Authentifizierung und Admin-Rechte erforderlich.**
+    Gibt 403 Forbidden zurück, wenn keine Admin-Berechtigung vorliegt.
     """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Aktualisieren von Profilen"
+        )
     service = ProfileService(db)
-    # Add authorization check: Fetch profile, check if existing_profile.user_id == current_user.id or current_user.is_superuser
     return service.update_profile(profile_id, profile)
 
-@router.delete("/{profile_id}", response_model=GenericResponse, summary="Profil löschen (Admin/Owner)")
+@router.delete("/{profile_id}", response_model=GenericResponse, summary="Profil löschen (Admin)")
 async def delete_profile(
     profile_id: int, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user) # Requires authentication
+    current_user: User = Depends(get_current_active_user)
 ):
     """
-    Löscht ein Profil. **Authentifizierung erforderlich.**
-    
-    - TODO: Stelle sicher, dass nur der Profilinhaber oder ein Admin das Profil löschen kann.
+    Löscht ein Profil. **Authentifizierung und Admin-Rechte erforderlich.**
+    Gibt 403 Forbidden zurück, wenn keine Admin-Berechtigung vorliegt.
     """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Keine Berechtigung zum Löschen von Profilen"
+        )
     service = ProfileService(db)
-    # Add authorization check: Fetch profile, check if existing_profile.user_id == current_user.id or current_user.is_superuser
     result = service.delete_profile(profile_id)
     return GenericResponse(detail=result["detail"])

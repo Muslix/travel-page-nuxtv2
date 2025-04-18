@@ -1,7 +1,7 @@
 import sys
 import os
 from contextlib import asynccontextmanager
-from app.db.database import Base, engine, get_db 
+from app.db.database import Base, engine, get_db
 from app.api.routes import (
     adventure_routes, auth_routes, image_routes, profile_routes, equipment_routes
 )
@@ -64,8 +64,16 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             print(f"Error applying Alembic migrations: {e}")
             print("Please ensure the database is running and migrations are consistent.")
-            # raise e # Optionally re-raise to stop startup
-
+        # Seed data in development environment
+        from app.core.config import settings as _settings  # avoid shadowing
+        if _settings.ENV == 'development':
+            print("Seeding database with sample data...")
+            try:
+                from app.db.seeds import create_seed_data
+                create_seed_data()
+                print("Seed data created successfully.")
+            except Exception as seed_err:
+                print(f"Error seeding database: {seed_err}")
     print("Startup tasks finished.")
 
     yield
@@ -78,16 +86,35 @@ async def lifespan(app: FastAPI):
 
 # --- FastAPI App Initialization ---
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    description="API für den Schwob aufm Sattl Blog",
-    version="0.1.0",
-    lifespan=lifespan
+    title="Schwob aufm Sattl API",
+    description="""
+    API für den Bikepacking- und Reiseblog "Schwob aufm Sattl". 
+    Bietet Endpunkte für Abenteuer, Ausrüstung, Profile, Galerie und Admin-Management. 
+    Authentifizierung via JWT Bearer Token. 
+    Siehe Beispiel-Requests und -Responses in der Dokumentation.
+    """,
+    version="1.0.0",
+    contact={
+        "name": "Projekt Schwob aufm Sattl",
+        "email": "muslixlp@googlemail.com"
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT"
+    },
+    openapi_tags=[
+        {"name": "adventures", "description": "Abenteuer/Touren-Management (CRUD)"},
+        {"name": "equipment", "description": "Ausrüstungs-Management (CRUD)"},
+        {"name": "profiles", "description": "Profil-Management (CRUD)"},
+        {"name": "images", "description": "Bild- und Galerie-Management"},
+        {"name": "auth", "description": "Authentifizierung & Token"}
+    ]
 )
 
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_HOSTS or ["*"], # Use configured origins or allow all
+    allow_origins=settings.CORS_ORIGINS or ["*"], # Use CORS_ORIGINS from config
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,0 +1,218 @@
+/* 
+  Responsive Design für Schwob aufm Sattl 
+  Allgemeine responsive Design-Anpassungen für die gesamte Website
+*/
+
+/* Base Styles */
+:root {
+  --primary-spacing: 16px;
+  --secondary-spacing: 32px;
+  --large-spacing: 64px;
+}
+
+/* Desktop First Approach */
+html {
+  font-size: 16px;
+}
+
+/* Tablet Viewport */
+@media (max-width: 960px) {
+  html {
+    font-size: 15px;
+  }
+  
+  .responsive-container {
+    padding-left: var(--primary-spacing);
+    padding-right: var(--primary-spacing);
+  }
+  
+  .py-16 {
+    padding-top: var(--secondary-spacing) !important;
+    padding-bottom: var(--secondary-spacing) !important;
+  }
+  
+  .py-12 {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+  }
+  
+  /* Reduziere Abstände in Überschriften auf Tablets */
+  .text-h2 {
+    font-size: 2.5rem !important;
+  }
+  
+  .text-h3 {
+    font-size: 2rem !important;
+  }
+  
+  .text-h4 {
+    font-size: 1.5rem !important;
+  }
+  
+  /* Hero-Elemente anpassen */
+  .hero-overlay {
+    padding-top: 100px !important;
+  }
+  
+  /* Verringern Sie die Höhe der Hero-Banner auf Tablets */
+  .v-carousel, .equipment-hero .v-img, .adventure-hero .v-img {
+    height: 450px !important;
+  }
+  
+  /* Profilbild in "Über mich" anpassen */
+  .profile-image-container {
+    width: 300px !important;
+    height: 300px !important;
+  }
+}
+
+/* Mobile Viewport */
+@media (max-width: 600px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .responsive-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .py-16 {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+  }
+  
+  .py-12 {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+  }
+  
+  /* Weitere Anpassungen für Überschriften auf Mobilgeräten */
+  .text-h2 {
+    font-size: 2rem !important;
+  }
+  
+  .text-h3 {
+    font-size: 1.75rem !important;
+  }
+  
+  .text-h4 {
+    font-size: 1.35rem !important;
+  }
+  
+  /* Hero-Elemente weiter anpassen */
+  .hero-overlay {
+    padding-top: 60px !important;
+  }
+  
+  /* Verringern Sie die Höhe der Hero-Banner auf Mobilgeräten */
+  .v-carousel, .equipment-hero .v-img, .adventure-hero .v-img {
+    height: 350px !important;
+  }
+  
+  /* Profilbild in "Über mich" weiter anpassen */
+  .profile-image-container {
+    width: 220px !important;
+    height: 220px !important;
+    margin: 0 auto 24px auto !important;
+  }
+  
+  /* Navigation anpassen */
+  .v-btn--size-default {
+    padding: 0 12px !important;
+  }
+  
+  /* Kartenelemente anpassen */
+  .v-card-title {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Abstände in Listen anpassen */
+  .v-list-item {
+    min-height: 40px !important;
+    padding: 8px 16px !important;
+  }
+  
+  /* Formularelemente anpassen */
+  .v-text-field .v-field__input {
+    padding: 8px 16px !important;
+    min-height: 44px !important;
+  }
+  
+  /* Buttons anpassen */
+  .v-btn--size-large {
+    padding: 0 16px !important;
+    min-height: 44px !important;
+  }
+  
+  /* Social Media Icons kompakter machen */
+  .social-icons .v-btn {
+    margin-right: 4px !important;
+  }
+  
+  /* Bilder in Artikeln anpassen */
+  .adventure-content img, .equipment-details img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* Spezielle Media Queries für bestimmte Elemente */
+@media (max-width: 768px) {
+  /* Verstecke bestimmte Elemente auf kleineren Bildschirmen */
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  /* Zentriere Text auf Mobilgeräten */
+  .center-on-mobile {
+    text-align: center !important;
+  }
+  
+  /* Stapeln statt horizontal ausrichten */
+  .stack-on-mobile {
+    flex-direction: column !important;
+  }
+  
+  /* Footer-Elemente anpassen */
+  footer .v-col {
+    text-align: center !important;
+    margin-bottom: 16px !important;
+  }
+}
+
+/* Print Styles für Reiserouten */
+@media print {
+  .v-app-bar,
+  .v-navigation-drawer,
+  .v-footer,
+  .no-print {
+    display: none !important;
+  }
+  
+  .v-main {
+    padding: 0 !important;
+  }
+  
+  .adventure-content,
+  .route-details {
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+  }
+  
+  .v-img {
+    max-height: 300px !important;
+    page-break-inside: avoid !important;
+  }
+  
+  a::after {
+    content: " (" attr(href) ")" !important;
+    font-size: 90% !important;
+  }
+}
+
+/* Dark Mode Anpassungen */
+.dark-mode {
+  /* Dark Mode Variablen werden in einer separaten Datei definiert */
+  color-scheme: dark;
+}

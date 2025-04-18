@@ -1,0 +1,71 @@
+# File Name: .gitignore
+# Relative Path: .gitignore
+# Purpose: Ignoriert temporäre, Build-, Log- und sensible Dateien/Ordner für das Schwob aufm Sattl Projekt.
+# Detailed Overview: Diese Datei sorgt dafür, dass lokale Umgebungen, Build-Artefakte, sensible Daten und Editor-spezifische Dateien nicht ins Git-Repository gelangen. Sie ist für ein Nuxt.js + FastAPI + PostgreSQL Projekt optimiert.
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.env
+.venv/
+venv/
+ENV/
+.env.*
+
+# FastAPI/Backend
+backend/app/db/*.sqlite3
+backend/app/db/*.db
+backend/app/db/__pycache__/
+backend/app/__pycache__/
+backend/tests/__pycache__/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/.coverage
+backend/coverage.xml
+backend/htmlcov/
+
+# Node/Nuxt.js/Frontend
+node_modules/
+frontend/node_modules/
+frontend/.nuxt/
+frontend/.output/
+frontend/.env
+frontend/.env.*
+
+# Logs
+*.log
+logs/
+
+# OS/Editor/IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Media/Uploads (optional, falls nicht versioniert)
+media/
+uploads/
+
+# Test/Build Artifacts
+coverage/
+dist/
+build/
+
+# Misc
+*.bak
+*.tmp
+*.orig
+
+# Ignore local database dumps
+*.sql
+*.dump
+
+# End of .gitignore

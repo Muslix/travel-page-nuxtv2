@@ -17,6 +17,8 @@
           <v-btn to="/profil" variant="text" class="mx-1">Profil</v-btn>
         </div>
         
+        <ThemeSwitcher class="ml-2 mr-2" />
+        
         <v-app-bar-nav-icon class="md:hidden" @click="drawer = !drawer"></v-app-bar-nav-icon>
       </v-app-bar>
       
@@ -27,6 +29,13 @@
           <v-list-item to="/ausruestung" title="Ausrüstung"></v-list-item>
           <v-list-item to="/galerie" title="Galerie"></v-list-item>
           <v-list-item to="/profil" title="Profil"></v-list-item>
+          <v-divider class="my-2"></v-divider>
+          <v-list-item>
+            <template v-slot:prepend>
+              <ThemeSwitcher />
+            </template>
+            <v-list-item-title>Dark Mode</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-navigation-drawer>
     </header>
@@ -71,6 +80,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 const drawer = ref(false);
 </script>
 

@@ -1,0 +1,135 @@
+/* 
+  Dark Mode Styles für Schwob aufm Sattl 
+  Farbdefinitionen und Theme-Anpassungen für den Dark Mode
+*/
+
+:root {
+  /* Light Theme Variablen (Standard) */
+  --primary-color: #1867C0;
+  --secondary-color: #5CBBF6;
+  --accent-color: #FF4081;
+  --background-color: #FFFFFF;
+  --surface-color: #FFFFFF;
+  --error-color: #FF5252;
+  --success-color: #4CAF50;
+  --warning-color: #FB8C00;
+  --info-color: #2196F3;
+  
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.6);
+  --text-disabled: rgba(0, 0, 0, 0.38);
+  
+  --divider-color: rgba(0, 0, 0, 0.12);
+  --card-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  
+  --code-background: #f5f5f5;
+  --hover-overlay: rgba(0, 0, 0, 0.04);
+}
+
+/* Dark Theme Variablen */
+.v-theme--dark {
+  --primary-color: #2196F3;
+  --secondary-color: #64B5F6;
+  --accent-color: #FF4081;
+  --background-color: #121212;
+  --surface-color: #1E1E1E;
+  --error-color: #CF6679;
+  --success-color: #81C784;
+  --warning-color: #FFAB40;
+  --info-color: #64B5F6;
+  
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-disabled: rgba(255, 255, 255, 0.38);
+  
+  --divider-color: rgba(255, 255, 255, 0.12);
+  --card-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.5), 0px 4px 5px 0px rgba(0, 0, 0, 0.44), 0px 1px 10px 0px rgba(0, 0, 0, 0.42);
+  
+  --code-background: #2d2d2d;
+  --hover-overlay: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark Mode spezifische Anpassungen */
+.v-theme--dark {
+  /* Hintergrund-Farben */
+  .v-card {
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+  }
+  
+  .v-sheet, .v-list {
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+  }
+  
+  .bg-grey-lighten-4 {
+    background-color: #2d2d2d !important;
+  }
+  
+  /* Text-Farben */
+  .text-primary {
+    color: var(--text-primary) !important;
+  }
+  
+  .text-secondary {
+    color: var(--text-secondary) !important;
+  }
+  
+  /* Bilder und Medien im Dark Mode */
+  .dark-mode-image-filter {
+    filter: brightness(0.85) contrast(1.1);
+  }
+  
+  /* Code-Blöcke im Dark Mode */
+  pre, code {
+    background-color: var(--code-background);
+    color: #e6e6e6;
+  }
+  
+  /* Formular-Elemente im Dark Mode */
+  .v-field {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  /* Footer-Anpassungen für Dark Mode */
+  .v-footer {
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    border-top: 1px solid var(--divider-color);
+  }
+  
+  /* Gradient Overlays für Bilder im Dark Mode anpassen */
+  .hero-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.3) 100%) !important;
+  }
+  
+  .category-image::before {
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.2) 100%) !important;
+  }
+  
+  .adventure-image-gradient {
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%) !important;
+  }
+  
+  /* Subtle Hover-Effekt im Dark Mode */
+  .on-hover:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+  
+  /* Anpassungen für Ausrüstungs-Seite */
+  .equipment-hero .v-img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
+  
+  /* Spezielle Anpassungen für helle Bilder im Dark Mode */
+  .darken-image-in-dark-mode {
+    filter: brightness(0.85);
+  }
+}
