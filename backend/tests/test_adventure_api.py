@@ -48,6 +48,10 @@ async def test_create_adventure_forbidden_for_non_admin():
 async def test_create_adventure_success_for_admin():
     """Admin kann Abenteuer erfolgreich anlegen."""
     db = next(get_db())
+    # Cleanup any previous test entry to avoid slug duplication errors
+    from app.models.adventure_model import Adventure as DBAdventure
+    db.query(DBAdventure).filter(DBAdventure.title == "Admin Adventure").delete()
+    db.commit()
     token = get_admin_token(db)
     payload = {
         "title": "Admin Adventure",
