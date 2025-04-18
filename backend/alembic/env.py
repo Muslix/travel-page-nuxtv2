@@ -9,8 +9,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# Import der Modelle, damit Alembic sie erkennen kann
-# import app.models # Keep this if your models are defined there and Base is configured
+# Importiere explizit alle Models, damit Alembic sie für Autogenerate erkennt
+from app.models import user_model, adventure_model, equipment_model, image_model, profile_model, tag_model
 from app.db.database import Base # Import Base from your database setup
 from app.core.config import settings
 

@@ -30,6 +30,7 @@ class Adventure(Base):
     updated_at = Column(Date, nullable=True)
     
     # Relationships
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     images = relationship("Image", back_populates="adventure")
     tags = relationship("Tag", secondary=adventure_tag, back_populates="adventures")
     

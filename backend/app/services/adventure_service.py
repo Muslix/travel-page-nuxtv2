@@ -45,7 +45,9 @@ class AdventureService:
         """Ein neues Abenteuer erstellen"""
         # Daten aus dem Pydantic-Modell in ein Dict umwandeln
         adventure_dict = adventure_data.dict(exclude={"tags"})
-        
+        # Map featured_image_url to cover_image (DB column)
+        if "featured_image_url" in adventure_dict:
+            adventure_dict["cover_image"] = adventure_dict.pop("featured_image_url")
         # Wenn kein Slug angegeben ist, aus dem Titel generieren
         if not adventure_dict.get("slug"):
             adventure_dict["slug"] = generate_slug(adventure_dict["title"])

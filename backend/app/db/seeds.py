@@ -47,6 +47,7 @@ def seed_data(db: Session):
             title="Schwäbische Alb Tour",
             slug="schwabische-alb-tour",
             description="Eine wunderschöne Tour durch die Schwäbische Alb",
+            content="Ausführlicher Bericht zur Schwäbischen Alb Tour.",  # Pflichtfeld gesetzt
             status="published",
             distance_km=120.5,
             user_id=admin.id
@@ -61,7 +62,7 @@ def seed_data(db: Session):
         equipment = Equipment(
             name="Ortlieb Lenkertasche",
             description="Wasserdichte Lenkertasche für Bikepacking-Touren",
-            weight_grams=450
+            weight_g=450  # Feldname korrigiert
         )
         db.add(equipment)
         db.commit()
@@ -69,16 +70,16 @@ def seed_data(db: Session):
         equipment = db.query(Equipment).filter_by(name="Ortlieb Lenkertasche").first()
 
     # Profil
-    if not db.query(Profile).filter_by(display_name="Schwob aufm Sattl").first():
+    if not db.query(Profile).filter_by(name="Schwob aufm Sattl").first():
         profile = Profile(
-            display_name="Schwob aufm Sattl",
-            bio="Radabenteuer, Outdoor und Bikepacking aus Schwaben.",
-            user_id=admin.id
+            name="Schwob aufm Sattl",
+            bio="Radabenteuer, Outdoor und Bikepacking aus Schwaben."
+            # user_id entfernt, da im Model nicht vorhanden
         )
         db.add(profile)
         db.commit()
     else:
-        profile = db.query(Profile).filter_by(display_name="Schwob aufm Sattl").first()
+        profile = db.query(Profile).filter_by(name="Schwob aufm Sattl").first()
 
     # Beispielbild
     if not db.query(Image).filter_by(title="Bergpanorama").first():

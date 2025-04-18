@@ -19,10 +19,10 @@ class AdventureBase(BaseModel):
     slug: Optional[str] = None
     description: str
     content: str
+    status: str  # Neu: Adventure status
     featured_image_url: Optional[str] = None
-    is_published: bool = False
-    distance: Optional[float] = None
-    elevation_gain: Optional[float] = None
+    distance_km: Optional[float] = None  # Neu: Distanz in Kilometern
+    elevation_m: Optional[int] = None     # Neu: Höhenmeter
     duration_days: Optional[int] = None
     location: Optional[str] = None
     
@@ -38,10 +38,10 @@ class AdventureUpdate(BaseModel):
     title: Optional[str] = Field(None, example="Neue Tour")
     description: Optional[str] = Field(None, example="Kurze Beschreibung der Tour")
     content: Optional[str] = Field(None, example="Detaillierte Beschreibung ...")
+    status: Optional[str] = Field(None, example="draft")  # Neu: Adventure status
     featured_image_url: Optional[str] = Field(None, example="/uploads/images/cover.jpg")
-    is_published: Optional[bool] = Field(None, example=True)
-    distance: Optional[float] = Field(None, example=120.5)
-    elevation_gain: Optional[float] = Field(None, example=1800)
+    distance_km: Optional[float] = Field(None, example=120.5)  # Neu: Distanz in Kilometern
+    elevation_m: Optional[int] = Field(None, example=1800)    # Neu: Höhenmeter
     duration_days: Optional[int] = Field(None, example=3)
     location: Optional[str] = Field(None, example="Schwäbische Alb")
     tags: Optional[List[Union[int, str]]] = Field(None, example=["Bikepacking"]) 
@@ -52,6 +52,7 @@ class Adventure(AdventureBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
     tags: List[Tag] = Field(default_factory=list, example=[{"id": 1, "name": "Bikepacking"}])
+    # Diese Schema-Erweiterungen stellen sicher, dass Antwort das Feld status und Distanz/Höhenmeter enthält
 
     class Config:
         from_attributes = True
@@ -62,10 +63,10 @@ class Adventure(AdventureBase):
                 "slug": "schwabische-alb-tour",
                 "description": "Eine wunderschöne Tour durch die Schwäbische Alb",
                 "content": "Detaillierte Beschreibung ...",
+                "status": "published",
                 "featured_image_url": "/uploads/images/cover.jpg",
-                "is_published": True,
-                "distance": 120.5,
-                "elevation_gain": 1800,
+                "distance_km": 120.5,
+                "elevation_m": 1800,
                 "duration_days": 3,
                 "location": "Schwäbische Alb",
                 "tags": [

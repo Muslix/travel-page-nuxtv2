@@ -35,8 +35,15 @@ def get_or_create_test_user(db: Session, is_admin: bool = False) -> User:
 
 
 def generate_token_for_user(user: User) -> str:
-    """Erzeugt einen gültigen JWT-Token für den angegebenen User."""
-    token = create_access_token(subject=str(user.id))
+    """
+    Erzeugt einen gültigen JWT-Token für den angegebenen User.
+    Das Token enthält das Feld 'sub' (Benutzername), 'email' und 'is_admin', wie vom Backend erwartet.
+    """
+    token = create_access_token(data={
+        "sub": user.username,
+        "email": user.email,
+        "is_admin": user.is_admin
+    })
     return token
 
 

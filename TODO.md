@@ -23,11 +23,7 @@ Ziel ist es, ein persönliches Reise- und Radabenteuer-Blog zu schaffen, das sow
 - [ ] CI/CD Pipeline einrichten
 
 ## Datenbank
-- [x] PostgreSQL Datenbankstruktur entwerfen
-- [x] Tabellen für Abenteuer/Touren, Bilder, Ausrüstung, Profile erstellen
-- [x] Datenbankmigrationen einrichten
-- [x] Refaktorierung: Jedes Modell in eine eigene Datei aufteilen
-- [x] Seed-Daten erstellen für Entwicklung (siehe backend/app/db/seeds.py für initiale Entwicklungsdaten)
+- [ ] Prüfe und erweitere das Datenbankschema, um alle Felder abzubilden, die das Frontend benötigt (z.B. API-Felder für Abenteuer, Tags, Bilder, Profile)
 
 ## Backend (FastAPI)
 - [x] FastAPI Projekt-Setup
